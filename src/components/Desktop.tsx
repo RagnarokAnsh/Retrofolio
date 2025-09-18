@@ -15,7 +15,7 @@ import ContactWindow from './windows/ContactWindow';
 export interface WindowState {
   id: string;
   title: string;
-  component: React.ComponentType<any>;
+  component: React.ComponentType<unknown>;
   isMinimized: boolean;
   position: { x: number; y: number };
   size: { width: number; height: number };
@@ -37,7 +37,7 @@ const Desktop = () => {
   const openWindow = (
     id: string,
     title: string,
-    component: React.ComponentType<any>,
+    component: React.ComponentType<unknown>,
     size = { width: 600, height: 400 }
   ) => {
     // Responsive window sizing

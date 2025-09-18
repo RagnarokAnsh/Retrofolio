@@ -31,7 +31,7 @@ export const SoundProvider = ({ children }: SoundProviderProps) => {
 
   useEffect(() => {
     // Create simplified sound effects using Web Audio API
-    const createBeep = (frequency: number, duration: number) => {
+    const createBeep = () => {
       return new Howl({
         src: [`data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmNBBSl+z+/OKyUFe8bz25hSEBhJrf`],
         volume: 0.3,
@@ -40,12 +40,12 @@ export const SoundProvider = ({ children }: SoundProviderProps) => {
     };
 
     soundsRef.current = {
-      startup: createBeep(800, 300),
-      click: createBeep(1000, 100),
-      error: createBeep(300, 400),
-      notification: createBeep(600, 200),
-      windowOpen: createBeep(440, 150),
-      windowClose: createBeep(330, 150),
+      startup: createBeep(),
+      click: createBeep(),
+      error: createBeep(),
+      notification: createBeep(),
+      windowOpen: createBeep(),
+      windowClose: createBeep(),
     };
 
     return () => {

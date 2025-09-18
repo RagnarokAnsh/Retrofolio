@@ -2,6 +2,26 @@
 
 import { useState, useEffect } from 'react';
 
+interface BatteryManager extends EventTarget {
+  level: number;
+  charging: boolean;
+  chargingTime: number;
+  dischargingTime: number;
+  addEventListener<K extends keyof BatteryEventMap>(type: K, listener: (this: BatteryManager, ev: Event) => unknown, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof BatteryEventMap>(type: K, listener: (this: BatteryManager, ev: Event) => unknown, options?: boolean | EventListenerOptions): void;
+}
+
+interface NavigatorWithBattery extends Navigator {
+  getBattery?: () => Promise<BatteryManager>;
+}
+
+interface BatteryEventMap {
+  chargingchange: Event;
+  levelchange: Event;
+  chargingtimechange: Event;
+  dischargingtimechange: Event;
+}
+
 interface BatteryInfo {
   level: number;
   charging: boolean;
@@ -17,8 +37,9 @@ const BatteryIndicator = () => {
     const getBatteryInfo = async () => {
       try {
         // Check if Battery API is supported
-        if ('getBattery' in navigator) {
-          const batteryApi = await (navigator as any).getBattery();
+        const nav = navigator as NavigatorWithBattery;
+        if (typeof nav.getBattery === 'function') {
+          const batteryApi = await nav.getBattery();
           setIsSupported(true);
           
           const updateBatteryInfo = () => {
@@ -47,7 +68,7 @@ const BatteryIndicator = () => {
         } else {
           setIsSupported(false);
         }
-      } catch (error) {
+      } catch {
         console.log('Battery API not supported');
         setIsSupported(false);
       }

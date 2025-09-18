@@ -1,9 +1,17 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { useSounds } from '@/context/SoundContext';
 import { WindowState } from './Desktop';
+
+type MaybeWindow = { innerWidth?: number; innerHeight?: number };
+const getViewport = (): { width: number; height: number } => {
+  const g = globalThis as unknown as MaybeWindow & { document?: Document };
+  const width = typeof g.innerWidth === 'number' ? g.innerWidth : g.document?.documentElement?.clientWidth ?? 1200;
+  const height = typeof g.innerHeight === 'number' ? g.innerHeight : g.document?.documentElement?.clientHeight ?? 800;
+  return { width, height };
+};
 
 interface WindowProps {
   window: WindowState;
@@ -24,19 +32,18 @@ const Window = ({
   onPositionChange,
   hidden = false
 }: WindowProps) => {
-  const [isDragging, setIsDragging] = useState(false);
   const constraintsRef = useRef(null);
   const { playClick } = useSounds();
 
   const handleDragStart = () => {
-    setIsDragging(true);
     onFocus();
   };
 
-  const handleDragEnd = (event: any, info: PanInfo) => {
-    setIsDragging(false);
-    const viewportWidth = typeof globalThis !== 'undefined' && (globalThis as any).innerWidth ? (globalThis as any).innerWidth : 1200;
-    const viewportHeight = typeof globalThis !== 'undefined' && (globalThis as any).innerHeight ? (globalThis as any).innerHeight : 800;
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    const { width: viewportWidth, height: viewportHeight } = getViewport();
     const proposedX = window.position.x + info.offset.x;
     const proposedY = window.position.y + info.offset.y;
     const clampedX = Math.max(0, Math.min(proposedX, viewportWidth - window.size.width));
@@ -77,7 +84,7 @@ const Window = ({
           className="win95-title-bar flex-shrink-0 cursor-move"
           onPointerEnter={(e) => { (e.currentTarget as HTMLElement).style.cursor = 'move'; }}
           onPointerLeave={(e) => { (e.currentTarget as HTMLElement).style.cursor = 'default'; }}
-          onPointerDown={(e) => {
+          onPointerDown={() => {
             // Begin a manual drag when starting from header to improve feel
             // We let framer-motion handle dragging; this ensures focus
             onFocus();

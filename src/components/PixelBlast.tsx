@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { EffectComposer, EffectPass, RenderPass, Effect } from 'postprocessing';
+import { EffectComposer, EffectPass, RenderPass, Effect, Pass } from 'postprocessing';
 import './PixelBlast.css';
 
 type PixelBlastVariant = 'square' | 'circle' | 'triangle' | 'diamond';
@@ -322,6 +322,30 @@ void main(){
 
 const MAX_CLICKS = 10;
 
+type PixelBlastConfig = {
+  antialias: boolean;
+  liquid: boolean;
+  noiseAmount: number;
+};
+
+interface PixelUniforms {
+  uResolution: { value: THREE.Vector2 };
+  uTime: { value: number };
+  uColor: { value: THREE.Color };
+  uClickPos: { value: THREE.Vector2[] };
+  uClickTimes: { value: Float32Array };
+  uShapeType: { value: number };
+  uPixelSize: { value: number };
+  uScale: { value: number };
+  uDensity: { value: number };
+  uPixelJitter: { value: number };
+  uEnableRipples: { value: number };
+  uRippleSpeed: { value: number };
+  uRippleThickness: { value: number };
+  uRippleIntensity: { value: number };
+  uEdgeFade: { value: number };
+}
+
 const PixelBlast: React.FC<PixelBlastProps> = ({
   variant = 'circle',
   pixelSize = 6,
@@ -357,7 +381,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
     material: THREE.ShaderMaterial;
     clock: THREE.Clock;
     clickIx: number;
-    uniforms: any;
+    uniforms: PixelUniforms;
     resizeObserver?: ResizeObserver;
     raf?: number;
     quad?: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
@@ -365,19 +389,24 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
     composer?: EffectComposer;
     touch?: ReturnType<typeof createTouchTexture>;
     liquidEffect?: Effect;
+    globalPointerDown?: (e: PointerEvent) => void;
+    globalPointerMove?: (e: PointerEvent) => void;
+    domPointerDown?: (e: PointerEvent) => void;
+    domPointerMove?: (e: PointerEvent) => void;
+    activeEffects?: Effect[];
   } | null>(null);
-  const prevConfigRef = useRef<any>(null);
+  const prevConfigRef = useRef<PixelBlastConfig | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     speedRef.current = speed;
-    const needsReinitKeys = ['antialias', 'liquid', 'noiseAmount'];
-    const cfg = { antialias, liquid, noiseAmount } as const;
+    const needsReinitKeys = ['antialias', 'liquid', 'noiseAmount'] as const;
+    const cfg: PixelBlastConfig = { antialias, liquid, noiseAmount };
     let mustReinit = false;
     if (!threeRef.current) mustReinit = true;
     else if (prevConfigRef.current) {
-      for (const k of needsReinitKeys) if (prevConfigRef.current[k] !== (cfg as any)[k]) { mustReinit = true; break; }
+      for (const k of needsReinitKeys) if (prevConfigRef.current[k] !== cfg[k]) { mustReinit = true; break; }
     }
 
     if (mustReinit) {
@@ -441,11 +470,16 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       ro.observe(container);
 
       const randomFloat = () => {
-        if ((window as any).crypto?.getRandomValues) { const u32 = new Uint32Array(1); window.crypto.getRandomValues(u32); return u32[0] / 0xffffffff; }
+        if (typeof window !== 'undefined' && window.crypto && typeof window.crypto.getRandomValues === 'function') {
+          const u32 = new Uint32Array(1);
+          window.crypto.getRandomValues(u32);
+          return u32[0] / 0xffffffff;
+        }
         return Math.random();
       };
       const timeOffset = randomFloat() * 1000;
       let composer: EffectComposer | undefined;
+      const activeEffects: Effect[] = [];
       let touch: ReturnType<typeof createTouchTexture> | undefined;
       let liquidEffect: Effect | undefined;
       if (liquid) {
@@ -458,14 +492,16 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         effectPass.renderToScreen = true;
         composer.addPass(renderPass);
         composer.addPass(effectPass);
+        activeEffects.push(liquidEffect);
       }
 
       if (noiseAmount > 0) {
         if (!composer) { composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera)); }
         const noiseEffect = new Effect('NoiseEffect', `uniform float uTime; uniform float uAmount; float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453);} void mainUv(inout vec2 uv){} void mainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){ float n=hash(floor(uv*vec2(1920.0,1080.0))+floor(uTime*60.0)); float g=(n-0.5)*uAmount; outputColor=inputColor+vec4(vec3(g),0.0);} `, { uniforms: new Map<string, THREE.Uniform>([['uTime', new THREE.Uniform(0)], ['uAmount', new THREE.Uniform(noiseAmount)]]) });
         const noisePass = new EffectPass(camera, noiseEffect); noisePass.renderToScreen = true;
-        if (composer && composer.passes.length > 0) composer.passes.forEach(p => ((p as any).renderToScreen = false));
+        if (composer && composer.passes.length > 0) composer.passes.forEach((p: Pass) => { p.renderToScreen = false; });
         composer.addPass(noisePass);
+        activeEffects.push(noiseEffect);
       }
       if (composer) composer.setSize(renderer.domElement.width, renderer.domElement.height);
 
@@ -507,24 +543,24 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       };
       document.addEventListener('pointerdown', globalPointerDown, { passive: true });
       document.addEventListener('pointermove', globalPointerMove, { passive: true });
-      renderer.domElement.addEventListener('pointerdown', onPointerDown, { passive: true });
-      renderer.domElement.addEventListener('pointermove', onPointerMove, { passive: true });
 
       let raf = 0;
       const animate = () => {
         if (autoPauseOffscreen && !visibilityRef.current.visible) { raf = requestAnimationFrame(animate); return; }
         uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current;
-        if (liquidEffect) (liquidEffect as any).uniforms.get('uTime').value = uniforms.uTime.value;
         if (composer) {
           if (touch) touch.update();
-          composer.passes.forEach(p => { const effs = (p as any).effects; if (effs) effs.forEach((eff: any) => { const u = eff.uniforms?.get('uTime'); if (u) u.value = uniforms.uTime.value; }); });
+          activeEffects.forEach((eff: Effect) => {
+            const u = eff.uniforms.get('uTime') as THREE.Uniform | undefined;
+            if (u) u.value = uniforms.uTime.value;
+          });
           composer.render();
         } else renderer.render(scene, camera);
         raf = requestAnimationFrame(animate);
       };
       raf = requestAnimationFrame(animate);
 
-      threeRef.current = { renderer, scene, camera, material, clock, clickIx: 0, uniforms, resizeObserver: ro, raf, quad, timeOffset, composer, touch, liquidEffect };
+      threeRef.current = { renderer, scene, camera, material, clock, clickIx: 0, uniforms, resizeObserver: ro, raf, quad, timeOffset, composer, touch, liquidEffect, globalPointerDown, globalPointerMove, domPointerDown: onPointerDown, domPointerMove: onPointerMove, activeEffects };
     } else {
       const t = threeRef.current!;
       t.uniforms.uShapeType.value = SHAPE_MAP[variant] ?? 0;
@@ -540,8 +576,8 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       t.uniforms.uEdgeFade.value = edgeFade;
       if (transparent) t.renderer.setClearAlpha(0); else t.renderer.setClearColor(0x000000, 1);
       if (t.liquidEffect) {
-        const uStrength = (t.liquidEffect as any).uniforms.get('uStrength'); if (uStrength) uStrength.value = liquidStrength;
-        const uFreq = (t.liquidEffect as any).uniforms.get('uFreq'); if (uFreq) uFreq.value = liquidWobbleSpeed;
+        const uStrength = t.liquidEffect.uniforms.get('uStrength') as THREE.Uniform | undefined; if (uStrength) uStrength.value = liquidStrength;
+        const uFreq = t.liquidEffect.uniforms.get('uFreq') as THREE.Uniform | undefined; if (uFreq) uFreq.value = liquidWobbleSpeed;
       }
       if (t.touch) t.touch.radiusScale = liquidRadius;
     }
@@ -552,12 +588,10 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
       if (!threeRef.current) return;
       const t = threeRef.current;
       // Remove global listeners registered above
-      try {
-        document.removeEventListener('pointerdown', (window as any).globalPointerDown || ({} as any));
-      } catch {}
-      try {
-        document.removeEventListener('pointermove', (window as any).globalPointerMove || ({} as any));
-      } catch {}
+      if (t.globalPointerDown) document.removeEventListener('pointerdown', t.globalPointerDown);
+      if (t.globalPointerMove) document.removeEventListener('pointermove', t.globalPointerMove);
+      if (t.domPointerDown) t.renderer.domElement.removeEventListener('pointerdown', t.domPointerDown);
+      if (t.domPointerMove) t.renderer.domElement.removeEventListener('pointermove', t.domPointerMove);
       t.resizeObserver?.disconnect();
       cancelAnimationFrame(t.raf!);
       t.quad?.geometry.dispose();
