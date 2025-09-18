@@ -1,26 +1,210 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --win95-gray: #c0c0c0;
+  --win95-light-gray: #dfdfdf;
+  --win95-dark-gray: #808080;
+  --win95-darker-gray: #404040;
+  --win95-blue: #0000ff;
+  --win95-dark-blue: #000080;
+  --win95-teal: #008080;
+  --win95-desktop: #008080;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  background: #000000;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  cursor: url('../utils/pixel-cursor.cur'), url('../utils/pixel-cursor.png') 0 0, auto;
+}
+
+/* Subtle Animated Background with horizontal lines like reference
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.05) 1px,
+      rgba(0, 0, 0, 0.05) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 50%, #cccccc 100%);
+  animation: subtle-shift 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes subtle-shift {
+  0%, 100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: 0.95;
+    transform: translateY(-1px);
+  }
+} */
+
+/* Text Glitch Effect */
+.glitch-text {
+  position: relative;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 
+    0.05em 0 0 rgba(255, 0, 0, 0.75),
+    -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+    0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+  animation: glitch-text 2s infinite;
+}
+
+@keyframes glitch-text {
+  0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+  15% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+  16% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+  49% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+  50% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+  99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+  100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75); }
+}
+
+/* Removed scanlines for cleaner look */
+
+.win95-button {
+  background: var(--win95-gray);
+  border: 2px outset var(--win95-gray);
+  padding: 2px 6px;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.win95-button:active {
+  border: 2px inset var(--win95-gray);
+}
+
+.win95-window {
+  background: var(--win95-gray);
+  border: 2px outset var(--win95-gray);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.win95-title-bar {
+  background: linear-gradient(90deg, var(--win95-dark-blue) 0%, var(--win95-blue) 100%);
+  color: white;
+  padding: 2px 4px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.win95-taskbar {
+  background: linear-gradient(180deg, #dfdfdf 0%, #c0c0c0 50%, #a0a0a0 100%);
+  border-top: 1px solid #dfdfdf;
+  border-bottom: 1px solid #808080;
+  height: 32px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  z-index: 1000;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.desktop-icon {
+  width: 128px;
+  height: 144px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #A6FFA6;               /* neon green */
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.35); /* ensure contrast on black */
+  border: 1px solid rgba(0, 255, 102, 0.35);
+  box-shadow: 0 0 10px rgba(0, 255, 106, 0.2);
+}
+
+.desktop-icon:hover {
+  background: rgba(0, 255, 106, 0.12);
+  color: #D2FFD2;
+  box-shadow: 0 0 14px rgba(0, 255, 106, 0.4);
+}
+
+.desktop-icon.selected {
+  background: rgba(0, 255, 106, 0.18);
+  color: #FFFFFF;
+  border-color: rgba(0, 255, 106, 0.5);
+}
+
+.desktop-icon .icon {
+  font-size: 64px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 106, 0.5));
+}
+
+.desktop-icon .label {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .desktop-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 10px;
+  }
+  
+  .win95-taskbar {
+    height: 32px;
+  }
+  
+  .win95-button {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  
+  .win95-title-bar {
+    font-size: 10px;
+    padding: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .desktop-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 9px;
+  }
+  
+  body {
+    font-size: 10px;
+  }
 }
