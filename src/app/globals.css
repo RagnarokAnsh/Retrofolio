@@ -115,6 +115,22 @@ body {
   align-items: center;
 }
 
+/* Win95 Progress */
+.win95-progress {
+  width: 100%;
+  height: 18px;
+  background: var(--win95-light-gray);
+  border: 2px inset var(--win95-gray);
+  padding: 2px;
+}
+
+.win95-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #00a000, #00d000);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.35);
+  transition: width 120ms linear;
+}
+
 .win95-taskbar {
   background: linear-gradient(180deg, #dfdfdf 0%, #c0c0c0 50%, #a0a0a0 100%);
   border-top: 1px solid #dfdfdf;

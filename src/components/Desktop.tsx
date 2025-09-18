@@ -26,12 +26,34 @@ const Desktop = () => {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [nextZIndex, setNextZIndex] = useState(100);
   const [isBooting, setIsBooting] = useState(true);
+  const [bootProgress, setBootProgress] = useState(0);
   const { playStartup, playWindowOpen, playWindowClose } = useSounds();
 
   useEffect(() => {
     playStartup();
-    const timer = setTimeout(() => setIsBooting(false), 2000);
-    return () => clearTimeout(timer);
+    let rafId: number | null = null;
+    let start: number | null = null;
+    let clearDone: (() => void) | null = null;
+    const durationMs = 3200;
+
+    const step = (timestamp: number) => {
+      if (start === null) start = timestamp;
+      const elapsed = timestamp - start;
+      const next = Math.min(100, Math.round((elapsed / durationMs) * 100));
+      setBootProgress(next);
+      if (next < 100) {
+        rafId = requestAnimationFrame(step);
+      } else {
+        const doneTimeout = setTimeout(() => setIsBooting(false), 300);
+        clearDone = () => clearTimeout(doneTimeout);
+      }
+    };
+
+    rafId = requestAnimationFrame(step);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (clearDone) clearDone();
+    };
   }, [playStartup]);
 
   const openWindow = (
@@ -102,18 +124,35 @@ const Desktop = () => {
         className="fixed inset-0 bg-black flex items-center justify-center"
         initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
       >
         <div className="animated-bg" />
         <motion.div
-          className="text-black text-center relative z-10"
-          initial={{ scale: 0.8, opacity: 0 }}
+          className="win95-window w-[360px] max-w-[90vw] text-black relative z-10"
+          initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ duration: 0.35 }}
         >
-          <div className="text-6xl mb-4">💻</div>
-          <div className="text-xl mb-2 font-bold">Windows 95</div>
-          <div className="text-sm">Loading portfolio...</div>
+          <div className="win95-title-bar">
+            <span className="text-sm">Microsoft Windows 95</span>
+            <span className="text-xs">© Microsoft</span>
+          </div>
+          <div className="p-6 flex flex-col items-center gap-4">
+            <div className="text-5xl" aria-hidden>💻</div>
+            <div className="text-base font-bold">Starting Windows 95...</div>
+            <div
+              className="win95-progress"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={bootProgress}
+            >
+              <div
+                className="win95-progress-bar"
+                style={{ width: `${bootProgress}%` }}
+              />
+            </div>
+            <div className="text-xs text-gray-700">Loading portfolio... {bootProgress}%</div>
+          </div>
         </motion.div>
       </motion.div>
     );
