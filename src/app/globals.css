@@ -135,14 +135,14 @@ body {
   background: linear-gradient(180deg, #dfdfdf 0%, #c0c0c0 50%, #a0a0a0 100%);
   border-top: 1px solid #dfdfdf;
   border-bottom: 1px solid #808080;
-  height: 32px;
+  height: 48px;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   display: flex;
   align-items: center;
-  padding: 2px 4px;
+  padding: 4px 8px;
   z-index: 1000;
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -150,33 +150,37 @@ body {
 .desktop-icon {
   width: 128px;
   height: 144px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.desktop-icon .eb-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #A6FFA6;               /* neon green */
-  cursor: pointer;
+  color: #A6FFA6;
   padding: 10px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
   font-weight: 600;
   text-align: center;
   font-size: 14px;
-  background: rgba(0, 0, 0, 0.35); /* ensure contrast on black */
-  border: 1px solid rgba(0, 255, 102, 0.35);
-  box-shadow: 0 0 10px rgba(0, 255, 106, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.desktop-icon:hover {
+.desktop-icon:hover .eb-content {
   background: rgba(0, 255, 106, 0.12);
   color: #D2FFD2;
-  box-shadow: 0 0 14px rgba(0, 255, 106, 0.4);
 }
 
-.desktop-icon.selected {
+.desktop-icon.selected .eb-content {
   background: rgba(0, 255, 106, 0.18);
   color: #FFFFFF;
-  border-color: rgba(0, 255, 106, 0.5);
 }
 
 .desktop-icon .icon {
@@ -199,7 +203,7 @@ body {
   }
   
   .win95-taskbar {
-    height: 32px;
+    height: 40px;
   }
   
   .win95-button {

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SoundProvider } from "@/context/SoundContext";
+import { BackgroundProvider } from "@/context/BackgroundContext";
 
 export const metadata: Metadata = {
   title: "Retrofolio95 - Windows 95 Portfolio",
@@ -14,7 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="overflow-hidden select-none">
-        {children}
+        <SoundProvider>
+          <BackgroundProvider>
+            {children}
+          </BackgroundProvider>
+        </SoundProvider>
       </body>
     </html>
   );

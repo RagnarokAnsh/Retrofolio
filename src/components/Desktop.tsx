@@ -3,14 +3,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSounds } from '@/context/SoundContext';
+import { useBackground } from '@/context/BackgroundContext';
 import Taskbar from './Taskbar';
+import Lightning from './Lightning';
 import PixelBlast from './PixelBlast';
+import TextType from './TextType';
 import DesktopIcon from './DesktopIcon';
 import Window from './Window';
 import AboutWindow from './windows/AboutWindow';
 import ProjectsWindow from './windows/ProjectsWindow';
 import SkillsWindow from './windows/SkillsWindow';
 import ContactWindow from './windows/ContactWindow';
+import SettingsWindow from './windows/SettingsWindow';
 
 export interface WindowState {
   id: string;
@@ -28,6 +32,7 @@ const Desktop = () => {
   const [isBooting, setIsBooting] = useState(true);
   const [bootProgress, setBootProgress] = useState(0);
   const { playStartup, playWindowOpen, playWindowClose } = useSounds();
+  const { settings, isActivated } = useBackground();
 
   useEffect(() => {
     playStartup();
@@ -165,24 +170,59 @@ const Desktop = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* PixelBlast Background */}
-      <PixelBlast
-        variant="square"
-        pixelSize={10}           
-        color="#00FF6A"
-        patternScale={3.0}
-        patternDensity={0.9}     
-        pixelSizeJitter={0.4}
-        enableRipples
-        rippleSpeed={0.45}
-        rippleThickness={0.14}
-        rippleIntensityScale={1.6}
-        liquid={false}           
-        speed={0.6}
-        edgeFade={0.18}
-        transparent
-        className="pointer-events-none"
-      />
+      {/* Dynamic Background */}
+      {settings.type === 'lightning' ? (
+        <Lightning
+          hue={settings.lightningSettings.hue}
+          speed={settings.lightningSettings.speed}
+          intensity={settings.lightningSettings.intensity}
+          size={settings.lightningSettings.size}
+          xOffset={settings.lightningSettings.xOffset}
+          className="pointer-events-none"
+          style={{ position: 'absolute', inset: 0 }}
+        />
+      ) : (
+        <PixelBlast
+          variant={settings.pixelBlastSettings.variant}
+          pixelSize={settings.pixelBlastSettings.pixelSize}
+          color={settings.pixelBlastSettings.color}
+          patternScale={settings.pixelBlastSettings.patternScale}
+          patternDensity={settings.pixelBlastSettings.patternDensity}
+          liquid={settings.pixelBlastSettings.liquid}
+          liquidStrength={settings.pixelBlastSettings.liquidStrength}
+          liquidRadius={settings.pixelBlastSettings.liquidRadius}
+          pixelSizeJitter={settings.pixelBlastSettings.pixelSizeJitter}
+          enableRipples={settings.pixelBlastSettings.enableRipples}
+          rippleIntensityScale={settings.pixelBlastSettings.rippleIntensityScale}
+          rippleThickness={settings.pixelBlastSettings.rippleThickness}
+          rippleSpeed={settings.pixelBlastSettings.rippleSpeed}
+          liquidWobbleSpeed={settings.pixelBlastSettings.liquidWobbleSpeed}
+          edgeFade={settings.pixelBlastSettings.edgeFade}
+          className="pointer-events-none"
+          style={{ position: 'absolute', inset: 0 }}
+        />
+      )}
+      
+      {/* Top Left Intro Text */}
+      <div className="absolute top-8 left-8 z-20">
+        <TextType
+          text={[
+            "Hello,\nI'm Ansh a Full Stack Developer",
+            "Hello,\nI build modern web applications",
+            "Hello,\nI create digital experiences",
+            "Hello,\nI'm passionate about technology"
+          ]}
+          typingSpeed={95}
+          pauseDuration={1000}
+          deletingSpeed={40}
+          showCursor={true}
+          cursorCharacter="|"
+          loop={true}
+          className="text-2xl font-mono text-white font-bold"
+          textColors={['#00FF6A']}
+          initialDelay={1000}
+        />
+      </div>
       
       {/* Top Header Bar */}
       {/* <div className="absolute top-0 left-0 right-0 h-12 bg-white border-b border-gray-400 flex items-center justify-between px-4 z-10">
@@ -200,8 +240,8 @@ const Desktop = () => {
         </div>
       </div> */}
       
-      {/* Desktop Icons - Positioned like reference image */}
-      <div className="absolute top-16 right-8 grid grid-cols-2 gap-4">
+      {/* Desktop Icons - Arranged vertically */}
+      <div className="absolute top-16 right-8 flex flex-col gap-4">
         <DesktopIcon
           icon="📁"
           label="PROJECTS"
@@ -222,6 +262,11 @@ const Desktop = () => {
           label="ABOUT ME"
           onClick={() => openWindow('about', 'About Me', AboutWindow, { width: 500, height: 400 })}
         />
+        <DesktopIcon
+          icon="⚙️"
+          label="SETTINGS"
+          onClick={() => openWindow('settings', 'Settings', SettingsWindow, { width: 500, height: 400 })}
+        />
       </div>
 
       {/* Windows */}
@@ -240,6 +285,16 @@ const Desktop = () => {
           </Window>
         ))}
       </AnimatePresence>
+
+      {/* Windows Activation Text - Bottom Right (only show if not activated) */}
+      {!isActivated && (
+        <div className="absolute bottom-18 right-14 z-10">
+          <div className="p-2 shadow-lg">
+            <div className="text-xl text-gray-800 font-bold">Activate Windows</div>
+            <div className="text-lg text-gray-600">Go to Settings to activate Windows</div>
+          </div>
+        </div>
+      )}
 
       {/* Taskbar */}
       <Taskbar

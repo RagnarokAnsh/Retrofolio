@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSounds } from '@/context/SoundContext';
+import ElectricBorder from './ElectricBorder';
 
 interface DesktopIconProps {
   icon: string;
@@ -34,8 +35,17 @@ const DesktopIcon = ({ icon, label, onClick }: DesktopIconProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="icon">{icon}</div>
-      <div className="label">{label}</div>
+      <ElectricBorder
+        color="#00FF6A"
+        speed={0.8}
+        chaos={0.6}
+        thickness={2}
+        style={{ borderRadius: 6 }}
+        className="w-full h-full"
+      >
+        <div className="icon">{icon}</div>
+        <div className="label">{label}</div>
+      </ElectricBorder>
     </motion.div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useRef, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useRef, useEffect, useState, ReactNode } from 'react';
 import { Howl } from 'howler';
 
 interface SoundContextType {
@@ -10,6 +10,8 @@ interface SoundContextType {
   playNotification: () => void;
   playWindowOpen: () => void;
   playWindowClose: () => void;
+  isMuted: boolean;
+  toggleMute: () => void;
 }
 
 const SoundContext = createContext<SoundContextType | null>(null);
@@ -28,6 +30,7 @@ interface SoundProviderProps {
 
 export const SoundProvider = ({ children }: SoundProviderProps) => {
   const soundsRef = useRef<Record<string, Howl>>({});
+  const [isMuted, setIsMuted] = useState<boolean>(false);
 
   useEffect(() => {
     // Create simplified sound effects using Web Audio API
@@ -53,12 +56,16 @@ export const SoundProvider = ({ children }: SoundProviderProps) => {
     };
   }, []);
 
-  const playStartup = () => soundsRef.current.startup?.play();
-  const playClick = () => soundsRef.current.click?.play();
-  const playError = () => soundsRef.current.error?.play();
-  const playNotification = () => soundsRef.current.notification?.play();
-  const playWindowOpen = () => soundsRef.current.windowOpen?.play();
-  const playWindowClose = () => soundsRef.current.windowClose?.play();
+  const playStartup = () => !isMuted && soundsRef.current.startup?.play();
+  const playClick = () => !isMuted && soundsRef.current.click?.play();
+  const playError = () => !isMuted && soundsRef.current.error?.play();
+  const playNotification = () => !isMuted && soundsRef.current.notification?.play();
+  const playWindowOpen = () => !isMuted && soundsRef.current.windowOpen?.play();
+  const playWindowClose = () => !isMuted && soundsRef.current.windowClose?.play();
+  
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
 
   return (
     <SoundContext.Provider
@@ -69,6 +76,8 @@ export const SoundProvider = ({ children }: SoundProviderProps) => {
         playNotification,
         playWindowOpen,
         playWindowClose,
+        isMuted,
+        toggleMute,
       }}
     >
       {children}
