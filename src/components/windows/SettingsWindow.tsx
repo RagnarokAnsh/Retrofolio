@@ -142,7 +142,7 @@ const SettingsWindow = () => {
                     <label className="block text-sm text-gray-600 mb-1">Shape</label>
                     <select
                       value={settings.pixelBlastSettings.variant}
-                      onChange={(e) => updatePixelBlastSettings({ variant: e.target.value as any })}
+                      onChange={(e) => updatePixelBlastSettings({ variant: e.target.value as 'circle' | 'square' | 'triangle' | 'diamond' })}
                       className="w-full p-2 border border-gray-300 rounded text-sm"
                     >
                       <option value="circle">Circle</option>
@@ -202,20 +202,20 @@ const SettingsWindow = () => {
                   W
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800">Windows 95</h3>
-                  <p className="text-sm text-gray-600">Professional Edition</p>
+                  <h3 className="font-bold text-gray-800">Lindows 95</h3>
+                  <p className="text-sm text-gray-600">Pro Max Edition</p>
                 </div>
               </div>
               
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Product ID:</span>
-                  <span className="font-mono">12345-67890-ABCDE</span>
+                  <span className="font-mono">3.141592...</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Status:</span>
                   <span className={isActivated ? "text-green-600" : "text-red-600"}>
-                    {isActivated ? "Activated" : "Not Activated"}
+                    {isActivated ? "poor imbecile" : "Not Activated"}
                   </span>
                 </div>
               </div>
@@ -225,7 +225,7 @@ const SettingsWindow = () => {
               <div className="bg-yellow-50 border border-yellow-300 p-4">
                 <h4 className="font-bold text-yellow-800 mb-2">Activation Required</h4>
                 <p className="text-sm text-yellow-700 mb-4">
-                  Windows needs to be activated to continue using all features.
+                  Press the button below or UPI me 500 rupees to remove the annyoing ahh thumbnail.
                 </p>
                 <button
                   onClick={handleActivate}
@@ -240,32 +240,11 @@ const SettingsWindow = () => {
               <div className="bg-green-50 border border-green-300 p-4">
                 <h4 className="font-bold text-green-800 mb-2">Windows Activated</h4>
                 <p className="text-sm text-green-700">
-                  Thank you for activating Windows! All features are now available.
+                  Thank you for activating Windows you poor imbecile! Couldve Helped the Dev earn some money but you choose to press a button on your computer, which really tells a alot about your weak bloodline.
                 </p>
               </div>
             )}
 
-            <div className="space-y-4">
-              <h4 className="font-bold text-gray-800">System Information</h4>
-              <div className="bg-gray-50 border border-gray-200 p-3 text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Version:</span>
-                  <span>Windows 95 (Build 950)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Processor:</span>
-                  <span>Intel 486DX2-66</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Memory:</span>
-                  <span>16 MB RAM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Display:</span>
-                  <span>SVGA 1024x768</span>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>

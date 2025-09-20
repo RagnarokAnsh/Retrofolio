@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 
 const SkillsWindow = () => {
   const skills = [
-    { category: 'Frontend', items: ['React', 'Next.js', 'Vue.js', 'TypeScript', 'Tailwind CSS'], level: 90 },
-    { category: 'Backend', items: ['Node.js', 'PHP', 'Python', 'Express', 'Laravel'], level: 85 },
+    { category: 'Frontend', items: ['Angular', 'Next.js', 'React', 'WordPress', 'React Native'], level: 90 },
+    { category: 'Backend', items: ['Laravel', 'Node.js', 'Express', 'Django'], level: 85 },
     { category: 'Database', items: ['MongoDB', 'PostgreSQL', 'MySQL', 'Redis'], level: 80 },
-    { category: 'Tools', items: ['Git', 'Docker', 'Webpack', 'Vite', 'Figma'], level: 88 },
+    { category: 'Tools', items: ['Git', 'Docker','Figma'], level: 88 },
     { category: 'Cloud', items: ['Vercel', 'AWS', 'Digital Ocean', 'Stripe'], level: 75 },
   ];
 
@@ -62,7 +62,7 @@ const SkillsWindow = () => {
       </div>
 
       <div className="mt-4 p-3 bg-blue-100 border border-blue-400 text-xs">
-        <strong>Download instruction manual:</strong> Available in the Start menu under Help & Support
+        <strong>Download instruction manual:</strong> Available in the Start menu under Help & Support (not really but you can still try)
       </div>
     </motion.div>
   );

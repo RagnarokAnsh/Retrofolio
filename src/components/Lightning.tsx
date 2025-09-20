@@ -23,8 +23,8 @@ const Lightning: React.FC<LightningProps> = ({
   style
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
-  const programRef = useRef<WebGLProgram>();
+  const animationRef = useRef<number | undefined>(undefined);
+  const programRef = useRef<WebGLProgram | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;

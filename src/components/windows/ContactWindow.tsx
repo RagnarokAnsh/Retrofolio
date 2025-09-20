@@ -15,7 +15,7 @@ const ContactWindow = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     playNotification();
-    alert('¡Mensaje enviado! (This is a demo - no actual email sent)');
+    alert('under development, no actual email sent copy and paste my mail dont wait for redirection, do some actual work');
     setFormData({ name: '', email: '', message: '' });
   };
 
@@ -35,14 +35,21 @@ const ContactWindow = () => {
     >
       <h2 className="text-lg font-bold mb-4">Contact Information</h2>
       
-      <div className="space-y-3 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
         <motion.div
           className="border-2 border-gray-400 bg-white p-3"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <strong>📧 Email:</strong> connectansh@outlook.com
+          <strong>📧 Email:</strong>{' '}
+          <a 
+            href="mailto:connectansh@outlook.com" 
+            className="text-blue-600 hover:text-blue-800 underline"
+            onClick={() => playClick()}
+          >
+            connectansh@outlook.com
+          </a>
         </motion.div>
         
         <motion.div
@@ -51,11 +58,56 @@ const ContactWindow = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <strong>🐦 X (Twitter):</strong> @ragnarokansh
+          <strong>🐙 GitHub:</strong>{' '}
+          <a 
+            href="https://github.com/ragnarokansh" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+            onClick={() => playClick()}
+          >
+            @ragnarokansh
+          </a>
+        </motion.div>
+
+        <motion.div
+          className="border-2 border-gray-400 bg-white p-3"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <strong>📱 Phone:</strong> +91 8510878000
+        </motion.div>
+
+        <motion.div
+          className="border-2 border-gray-400 bg-white p-3"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <strong>💼 LinkedIn:</strong>{' '}
+          <a 
+            href="https://www.linkedin.com/in/connectansh/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+            onClick={() => playClick()}
+          >
+            Ansh Sharma
+          </a>
+        </motion.div>
+
+        <motion.div
+          className="border-2 border-gray-400 bg-white p-3 md:col-span-2"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <strong>💰 UPI ID:</strong> 8510878000@ptsbi
         </motion.div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      {/* <form onSubmit={handleSubmit} className="space-y-3">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -116,7 +168,7 @@ const ContactWindow = () => {
         >
           Send Message
         </motion.button>
-      </form>
+      </form> */}
     </motion.div>
   );
 };

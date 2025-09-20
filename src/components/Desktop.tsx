@@ -249,7 +249,7 @@ const Desktop = () => {
         />
         <DesktopIcon
           icon="🎨"
-          label="DESIGNS"
+          label="SKILLS"
           onClick={() => openWindow('skills', 'My Skills', SkillsWindow, { width: 600, height: 450 })}
         />
         <DesktopIcon
@@ -290,8 +290,8 @@ const Desktop = () => {
       {!isActivated && (
         <div className="absolute bottom-18 right-14 z-10">
           <div className="p-2 shadow-lg">
-            <div className="text-xl text-gray-800 font-bold">Activate Windows</div>
-            <div className="text-lg text-gray-600">Go to Settings to activate Windows</div>
+            <div className="text-xl text-gray-800 font-bold">Activate Lindows</div>
+            <div className="text-lg text-gray-600">Go to Settings to activate Lindows</div>
           </div>
         </div>
       )}

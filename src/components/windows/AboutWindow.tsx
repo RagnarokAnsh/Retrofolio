@@ -17,13 +17,13 @@ const AboutWindow = () => {
 
       <div className="space-y-4 text-sm">
         <div>
-          <strong>Processor:</strong> Just enough to get through the day
+          <strong>Freaking Cool:</strong> Absolutely 
         </div>
         <div>
-          <strong>Skills:</strong> Light a lighter with my feet
+          <strong>Skills:</strong> Check the Skills folder
         </div>
         <div>
-          <strong>Experience:</strong> Never enough for you
+          <strong>Experience:</strong> People call me Senior Dev for a Reason
         </div>
         <div>
           <strong>Creativity:</strong> 165 ZB of genius
